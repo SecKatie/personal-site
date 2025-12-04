@@ -15,12 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    strategy:
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
     outputs:
       tags: ${{ steps.sha.outputs.tags }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Get tags
         id: sha
@@ -29,23 +37,30 @@ jobs:
           echo "short=$short" >> $GITHUB_OUTPUT
           echo "tags=latest sha-$short" >> $GITHUB_OUTPUT
 
+      - name: Get platform name
+        id: platform
+        run: |
+          platform="${{ matrix.platform }}"
+          echo "name=${platform//\//-}" >> $GITHUB_OUTPUT
+
       - name: Build image
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.sha.outputs.tags }}
+          tags: latest
+          platform: ${{ matrix.platform }}
           containerfiles: |
             ./Dockerfile
 
       - name: Save image
         run: |
-          podman save -o image.tar ${{ env.IMAGE_NAME }}:latest
+          podman save -o image-${{ steps.platform.outputs.name }}.tar ${{ env.IMAGE_NAME }}:latest
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: container-image
-          path: image.tar
+          name: container-image-${{ steps.platform.outputs.name }}
+          path: image-${{ steps.platform.outputs.name }}.tar
           retention-days: 1
 
   push:
@@ -56,24 +71,24 @@ jobs:
       contents: read
 
     steps:
-      - name: Download image artifact
+      - name: Download amd64 image
         uses: actions/download-artifact@v4
         with:
-          name: container-image
+          name: container-image-linux-amd64
 
-      - name: Load image
-        run: |
-          podman load -i image.tar
+      - name: Download arm64 image
+        uses: actions/download-artifact@v4
+        with:
+          name: container-image-linux-arm64
 
-      - name: Tag image
+      - name: Load images
         run: |
-          tags="${{ needs.build.outputs.tags }}"
-          for tag in $tags; do
-            if [ "$tag" != "latest" ]; then
-              podman tag ${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag
-            fi
-          done
-          podman tag ${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          podman load -i image-linux-amd64.tar
+          podman tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:amd64
+          podman rmi ${{ env.IMAGE_NAME }}:latest
+          podman load -i image-linux-arm64.tar
+          podman tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:arm64
+          podman rmi ${{ env.IMAGE_NAME }}:latest
 
       - name: Log in to Quay.io
         uses: redhat-actions/podman-login@v1
@@ -82,9 +97,17 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
-      - name: Push to Quay.io
+      - name: Push arch-specific images
+        run: |
+          podman push ${{ env.IMAGE_NAME }}:amd64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64
+          podman push ${{ env.IMAGE_NAME }}:arm64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
+
+      - name: Create and push manifest
         run: |
           tags="${{ needs.build.outputs.tags }}"
           for tag in $tags; do
-            podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag
+            podman manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag
+            podman manifest add ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:amd64
+            podman manifest add ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
+            podman manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag
           done
