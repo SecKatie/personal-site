@@ -12,14 +12,18 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
     strategy:
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            artifact: linux-amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            artifact: linux-arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
     outputs:
       tags: ${{ steps.sha.outputs.tags }}
 
@@ -27,21 +31,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Get tags
         id: sha
         run: |
           short=$(echo ${{ github.sha }} | cut -c1-7)
           echo "short=$short" >> $GITHUB_OUTPUT
           echo "tags=latest sha-$short" >> $GITHUB_OUTPUT
-
-      - name: Get platform name
-        id: platform
-        run: |
-          platform="${{ matrix.platform }}"
-          echo "name=${platform//\//-}" >> $GITHUB_OUTPUT
 
       - name: Build image
         uses: redhat-actions/buildah-build@v2
@@ -54,13 +49,13 @@ jobs:
 
       - name: Save image
         run: |
-          podman save -o image-${{ steps.platform.outputs.name }}.tar ${{ env.IMAGE_NAME }}:latest
+          podman save -o image-${{ matrix.artifact }}.tar ${{ env.IMAGE_NAME }}:latest
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: container-image-${{ steps.platform.outputs.name }}
-          path: image-${{ steps.platform.outputs.name }}.tar
+          name: container-image-${{ matrix.artifact }}
+          path: image-${{ matrix.artifact }}.tar
           retention-days: 1
 
   push:
