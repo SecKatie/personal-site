@@ -3,16 +3,14 @@ layout: ../layouts/Layout.astro
 title: Katie | SecKatie
 description: Security Engineer, Open Source Contributor, Home Automation Enthusiast
 ---
+import Hero from '../components/Hero.astro';
+import Links from '../components/Links.astro';
 
-<div class="hero">
-  <div class="avatar-container">
-    <img src="/avatar.png" alt="Katie - Cyberpunk Avatar" class="avatar" />
-  </div>
-  <div class="hero-text">
-    <h1>Katie | SecKatie</h1>
-    <p class="tagline">Security Engineer | Open Source Contributor | Home Automation Enthusiast</p>
-  </div>
-</div>
+<Hero
+    name="Katie | SecKatie"
+    tagline="Security Engineer | Open Source Contributor | Home Automation Enthusiast"
+    avatarAlt="Katie - Cyberpunk Avatar"
+/>
 
 ## About Me
 
@@ -24,17 +22,13 @@ I'm a Security Engineer dedicated to making technology safer and more accessible
 
 A robust API implementation that bridges Wyze devices with Home Assistant. This project empowers users to integrate their Wyze devices into their home automation setup while upholding stringent security practices.
 
-<div class="links">
-  <a href="https://github.com/SecKatie/ha-wyzeapi">View on GitHub</a>
-</div>
+<Links links={[{ href: "https://github.com/SecKatie/ha-wyzeapi", label: "View on GitHub" }]} />
 
 ### FalkorDB-MCPServer
 
 A powerful MCP server implementation that enables AI assistants to interact with FalkorDB graph databases. This project allows seamless integration of graph database operations into AI workflows.
 
-<div class="links">
-  <a href="https://github.com/SecKatie/FalkorDB-MCPServer">View on GitHub</a>
-</div>
+<Links links={[{ href: "https://github.com/SecKatie/FalkorDB-MCPServer", label: "View on GitHub" }]} />
 
 ## Current Focus
 
@@ -61,8 +55,8 @@ I'm passionate about developing robust security systems that prevent breaches an
 
 ## Connect With Me
 
-<div class="links">
-  <a href="https://github.com/SecKatie">GitHub</a>
-  <a href="https://www.linkedin.com/in/kmulliken">LinkedIn</a>
-  <a href="mailto:katie@mulliken.net">Email</a>
-</div>
+<Links links={[
+    { href: "https://github.com/SecKatie", label: "GitHub" },
+    { href: "https://www.linkedin.com/in/kmulliken", label: "LinkedIn" },
+    { href: "mailto:katie@mulliken.net", label: "Email" }
+]} />
