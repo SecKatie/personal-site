@@ -1,10 +1,16 @@
 ---
 interface Props {
-    title: string;
+    frontmatter?: {
+        title: string;
+        description?: string;
+    };
+    title?: string;
     description?: string;
 }
 
-const { title, description = "Personal site" } = Astro.props;
+const { frontmatter, title: directTitle, description: directDescription } = Astro.props;
+const title = frontmatter?.title || directTitle || "Katie | SecKatie";
+const description = frontmatter?.description || directDescription || "Personal site";
 ---
 
 <!doctype html>
