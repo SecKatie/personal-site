@@ -89,10 +89,17 @@ kubectl get deployment personal-site -n personal-site -o jsonpath='{.spec.templa
 
 1. **Edit your content** (e.g., `src/content/Home.mdx`)
 2. **Commit and push** to the main branch
-3. **GitHub Actions** automatically builds and pushes a new container image
-4. **ArgoCD** syncs within 3 minutes (default polling interval) or immediately if webhook is configured
+3. **GitHub Actions** automatically:
+   - Builds a new container image for **both amd64 and arm64**
+   - Creates a multi-arch manifest
+   - Pushes to Quay.io with tags (`latest`, `sha-<commit>`)
+   - Updates `k8s/deployment.yaml` with the new manifest digest
+   - Commits the updated deployment back to the repo
+4. **ArgoCD** detects the deployment change and syncs automatically
 5. **Kubernetes** performs a rolling update with the new image
 6. **Live in ~5 minutes** total
+
+**Note:** The deployment now uses image digests (e.g., `@sha256:abc123...`) instead of tags, ensuring ArgoCD can detect actual changes and avoiding caching issues.
 
 ### When You Update K8s Manifests
 
@@ -181,6 +188,19 @@ For instant deployments instead of 3-minute polling, configure a webhook:
 
 3. ArgoCD will now sync immediately when you push changes!
 
+## GitHub Actions Setup
+
+The repository includes a GitHub Actions workflow that automatically builds and deploys on every push to `main`.
+
+### Required GitHub Secrets
+
+You need to configure these secrets in your repository (Settings → Secrets and variables → Actions):
+
+1. **QUAY_USERNAME** - Your Quay.io username (or robot account name)
+2. **QUAY_PASSWORD** - Your Quay.io password (or robot account token)
+
+See `.github/README.md` for detailed setup instructions.
+
 ## Benefits of New Setup
 
 ✅ **Faster deployments**: Pod startup in ~10s instead of 2-3 minutes  
@@ -190,6 +210,7 @@ For instant deployments instead of 3-minute polling, configure a webhook:
 ✅ **Better separation**: Infrastructure repo for infra, app repo for app  
 ✅ **Easier collaboration**: Contributors can see deployment config  
 ✅ **Immutable deployments**: Container images are built once and reused  
+✅ **Image digests**: ArgoCD can detect real changes, no cache issues with `:latest`  
 
 ## What Was Set Up
 

@@ -63,7 +63,7 @@ jobs:
     needs: build
     environment: Default
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Download amd64 image
@@ -98,6 +98,7 @@ jobs:
           podman push ${{ env.IMAGE_NAME }}:arm64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
 
       - name: Create and push manifest
+        id: manifest
         run: |
           tags="${{ needs.build.outputs.tags }}"
           for tag in $tags; do
@@ -106,3 +107,40 @@ jobs:
             podman manifest add ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
             podman manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$tag
           done
+          
+          # Get the digest of the latest manifest
+          DIGEST=$(podman manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest | jq -r '.manifests[0].digest')
+          echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository for update
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update deployment with digest
+        run: |
+          # Get the full digest from the registry
+          DIGEST=$(skopeo inspect docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest | jq -r '.Digest')
+          IMAGE_WITH_DIGEST="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}"
+          
+          echo "Updating deployment to use: ${IMAGE_WITH_DIGEST}"
+          
+          # Update the deployment.yaml with the new digest
+          sed -i "s|image: quay.io/kmulliken/personal-site.*|image: ${IMAGE_WITH_DIGEST}|g" k8s/deployment.yaml
+          
+          # Show the change
+          git diff k8s/deployment.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if git diff --quiet k8s/deployment.yaml; then
+            echo "No changes to deployment.yaml"
+            exit 0
+          fi
+          
+          git add k8s/deployment.yaml
+          git commit -m "chore: update deployment image to digest (multi-arch)"
+          git push

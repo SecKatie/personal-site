@@ -46,6 +46,22 @@ push-sha:
     just push "sha-${sha}"
     just push latest
 
+# Get the digest of the latest image from registry
+get-digest:
+    #!/usr/bin/env bash
+    podman pull {{registry}}/{{image_name}}:latest
+    podman inspect {{registry}}/{{image_name}}:latest | jq -r '.[0].Digest'
+
+# Update deployment.yaml with current registry digest
+update-deployment:
+    #!/usr/bin/env bash
+    digest=$(podman inspect {{registry}}/{{image_name}}:latest | jq -r '.[0].Digest')
+    image_with_digest="{{registry}}/{{image_name}}@${digest}"
+    echo "Updating deployment to: ${image_with_digest}"
+    sed -i.bak "s|image: quay.io/kmulliken/personal-site.*|image: ${image_with_digest}|g" k8s/deployment.yaml
+    rm k8s/deployment.yaml.bak
+    git diff k8s/deployment.yaml
+
 # Clean build artifacts
 clean:
     rm -rf dist
