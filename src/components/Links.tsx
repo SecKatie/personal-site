@@ -10,11 +10,22 @@ interface LinksProps {
 export default function Links({ links }: LinksProps) {
   return (
     <div className="links">
-      {links.map((link) => (
-        <a key={link.href} href={link.href}>
-          {link.label}
-        </a>
-      ))}
+      {links.map((link) => {
+        return (
+          <a
+            key={link.href}
+            href={link.href}
+            {...{
+              target: '_blank',
+              rel: 'noopener noreferrer',
+              'data-umami-event': 'outbound-link',
+              'data-umami-event-url': link.href,
+            }}
+          >
+            {link.label}
+          </a>
+        )
+      })}
     </div>
   )
 }
