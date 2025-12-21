@@ -37,7 +37,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: personal-site
-          image: quay.io/kmulliken/personal-site:latest  # Will be updated by GitHub Actions with digest
+          image: quay.io/kmulliken/personal-site@sha256:eb1ee9521fd6d5a7229b42dc11be7b1c0702bbf4579dd3bfb5f069b4347bc92f
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
