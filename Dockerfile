@@ -1,4 +1,4 @@
-# Stage 1: Build the Astro site
+# Stage 1: Build the Vite site
 FROM node:24-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate

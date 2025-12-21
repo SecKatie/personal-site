@@ -48,7 +48,7 @@ push-sha:
 
 # Clean build artifacts
 clean:
-    rm -rf dist node_modules/.astro
+    rm -rf dist
 
 # Full clean including node_modules
 clean-all:
