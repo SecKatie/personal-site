@@ -6,8 +6,14 @@
     --color-bg-secondary: #0f1420;
     --color-text: #e5e5e5;
     --color-text-muted: #a0a0a0;
-    --color-accent: #eb49eb;
-    --color-accent-glow: rgba(255, 0, 255, 0.3);
+    /* Accent system: pink + yellow */
+    --color-accent-pink: #ff4fd8;
+    --color-accent-yellow: #ffd54a;
+
+    /* Default accent (used by links, markers, etc.) */
+    --color-accent: var(--color-accent-pink);
+    --color-accent-glow: rgba(255, 79, 216, 0.32);
+    --color-accent-glow-yellow: rgba(255, 213, 74, 0.28);
     --color-border: #1e2d3d;
   }
 }
@@ -41,10 +47,15 @@
     display: flex;
     flex-direction: column;
     background: 
-      radial-gradient(ellipse at top right, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom left, rgba(138, 43, 226, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at top right, rgba(255, 213, 74, 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(255, 79, 216, 0.08) 0%, transparent 55%),
       var(--color-bg);
     position: relative;
+  }
+
+  ::selection {
+    background: rgba(255, 213, 74, 0.35);
+    color: var(--color-bg);
   }
 
   #root {
@@ -59,7 +70,9 @@
     margin-bottom: 0.5rem;
     letter-spacing: 0.02em;
     color: var(--color-text);
-    text-shadow: 0 0 20px var(--color-accent-glow);
+    text-shadow:
+      0 0 20px var(--color-accent-glow),
+      0 0 24px var(--color-accent-glow-yellow);
   }
 
   h2 {
@@ -93,11 +106,19 @@
   a {
     color: var(--color-accent);
     text-decoration: none;
-    transition: opacity 0.2s ease;
+    transition: color 0.15s ease, opacity 0.2s ease, text-shadow 0.15s ease;
   }
 
   a:hover {
-    opacity: 0.8;
+    color: var(--color-accent-yellow);
+    opacity: 1;
+    text-shadow: 0 0 14px rgba(255, 213, 74, 0.25);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-accent-yellow);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 
   ul, ol {
@@ -111,7 +132,7 @@
   }
 
   li::marker {
-    color: var(--color-accent);
+    color: var(--color-accent-yellow);
   }
 }
 
