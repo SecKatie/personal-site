@@ -17,7 +17,7 @@ export default function Home() {
 
       <TwoColumnLayout
         left={
-          <div className="md:flex md:flex-col md:justify-end md:h-full">
+          <div className="md:flex md:flex-col md:h-full">
             <PhotoBox src="/avatar.jpg" alt="Katie Mulliken" />
           </div>
         }
