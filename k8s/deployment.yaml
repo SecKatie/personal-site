@@ -37,7 +37,7 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: personal-site
-          image: quay.io/kmulliken/personal-site@sha256:42978714357f1dff6de3a599a87c5d561880cfffe7bd81eb7107744528ce735d
+          image: quay.io/kmulliken/personal-site@sha256:682c2aad467ae9e2463d7c0ba3dd862167a91a10a498701f3ed2ab754383e3c0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
