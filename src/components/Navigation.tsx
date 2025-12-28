@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import ViewTransitionLink from './ViewTransitionLink'
 import CutCornerBox from './CutCornerBox'
 
 interface NavigationProps {
@@ -14,7 +14,7 @@ export default function Navigation({ activeTab = 'katie' }: NavigationProps) {
         outerStyle={{ boxShadow: '0 0 15px var(--color-accent-glow)' }}
         innerClassName="inline-flex gap-0 overflow-hidden bg-[var(--color-bg-secondary)]"
       >
-          <Link
+          <ViewTransitionLink
             to="/"
             className={`px-6 py-2 text-sm font-medium uppercase tracking-wider transition-all duration-200 ${
               activeTab === 'katie'
@@ -23,9 +23,9 @@ export default function Navigation({ activeTab = 'katie' }: NavigationProps) {
             }`}
           >
             Katie
-          </Link>
+          </ViewTransitionLink>
           <div className="w-px bg-[var(--color-accent)]"></div>
-          <Link
+          <ViewTransitionLink
             to="/projects"
             className={`px-6 py-2 text-sm font-medium uppercase tracking-wider transition-all duration-200 ${
               activeTab === 'projects'
@@ -34,7 +34,7 @@ export default function Navigation({ activeTab = 'katie' }: NavigationProps) {
             }`}
           >
             Projects
-          </Link>
+          </ViewTransitionLink>
       </CutCornerBox>
     </nav>
   )

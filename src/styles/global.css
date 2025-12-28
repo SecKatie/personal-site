@@ -1,5 +1,78 @@
 @import "tailwindcss";
 
+/* View Transitions API */
+::view-transition {
+  navigation: auto;
+}
+
+/* Going deeper in hierarchy: slide from right */
+[data-transition="right"]::view-transition-old(root) {
+  animation: slide-out-left 0.3s ease-in-out forwards;
+}
+[data-transition="right"]::view-transition-new(root) {
+  animation: slide-in-right 0.3s ease-in-out forwards;
+}
+
+/* Going up in hierarchy: slide from left */
+[data-transition="left"]::view-transition-old(root) {
+  animation: slide-out-right 0.3s ease-in-out forwards;
+}
+[data-transition="left"]::view-transition-new(root) {
+  animation: slide-in-left 0.3s ease-in-out forwards;
+}
+
+/* Same level, going forward alphabetically: slide down */
+[data-transition="down"]::view-transition-old(root) {
+  animation: slide-out-up 0.3s ease-in-out forwards;
+}
+[data-transition="down"]::view-transition-new(root) {
+  animation: slide-in-down 0.3s ease-in-out forwards;
+}
+
+/* Same level, going backward alphabetically: slide up */
+[data-transition="up"]::view-transition-old(root) {
+  animation: slide-out-down 0.3s ease-in-out forwards;
+}
+[data-transition="up"]::view-transition-new(root) {
+  animation: slide-in-up 0.3s ease-in-out forwards;
+}
+
+/* Horizontal animations */
+@keyframes slide-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-100%); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Vertical animations */
+@keyframes slide-out-up {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-100%); }
+}
+@keyframes slide-in-down {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-out-down {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(100%); }
+}
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @layer theme {
   :root {
     --color-bg: #0a0e1a;
