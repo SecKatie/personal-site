@@ -1,4 +1,3 @@
-import Navigation from '../components/Navigation'
 import TwoColumnLayout from '../components/TwoColumnLayout'
 import PhotoBox from '../components/PhotoBox'
 import AboutBox from '../components/AboutBox'
@@ -13,8 +12,6 @@ export default function Home() {
 
   return (
     <>
-      <Navigation activeTab="katie" />
-
       <TwoColumnLayout
         left={
           <div className="md:flex md:flex-col md:h-full">

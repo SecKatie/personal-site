@@ -28,7 +28,7 @@ export default function ViewTransitionLink({
     const targetDepth = getPathDepth(targetPath)
 
     // Determine direction based on URL hierarchy depth
-    let direction: string
+    let direction: string | null
     if (targetDepth > currentDepth) {
       // Going deeper (e.g., /a → /a/page) - slide from right
       direction = 'right'
@@ -36,12 +36,13 @@ export default function ViewTransitionLink({
       // Going up (e.g., /a/page → /a) - slide from left
       direction = 'left'
     } else {
-      // Same level - use up/down based on alphabetical order
-      direction = targetPath > location.pathname ? 'down' : 'up'
+      // Same level (lateral navigation) - no animation
+      direction = null
     }
 
-    // Check if View Transitions API is supported
-    if (!document.startViewTransition) {
+    // Check if View Transitions API is supported or if no animation needed
+    if (!document.startViewTransition || direction === null) {
+      delete document.documentElement.dataset.transition
       navigate(to)
       return
     }

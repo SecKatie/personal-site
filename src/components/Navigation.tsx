@@ -2,7 +2,7 @@ import ViewTransitionLink from './ViewTransitionLink'
 import CutCornerBox from './CutCornerBox'
 
 interface NavigationProps {
-  activeTab?: 'katie' | 'projects'
+  activeTab?: 'katie' | 'projects' | 'posts'
 }
 
 export default function Navigation({ activeTab = 'katie' }: NavigationProps) {
@@ -34,6 +34,17 @@ export default function Navigation({ activeTab = 'katie' }: NavigationProps) {
             }`}
           >
             Projects
+          </ViewTransitionLink>
+          <div className="w-px bg-[var(--color-accent)]"></div>
+          <ViewTransitionLink
+            to="/posts"
+            className={`px-6 py-2 text-sm font-medium uppercase tracking-wider transition-all duration-200 ${
+              activeTab === 'posts'
+                ? 'bg-[var(--color-accent)] text-[var(--color-bg)]'
+                : 'bg-transparent text-[var(--color-accent)] hover:bg-[rgba(255,0,255,0.08)]'
+            }`}
+          >
+            Posts
           </ViewTransitionLink>
       </CutCornerBox>
     </nav>

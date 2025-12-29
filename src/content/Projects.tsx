@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Navigation from '../components/Navigation'
 import CutCornerBox from '../components/CutCornerBox'
 
 interface GitHubRepo {
@@ -109,8 +108,6 @@ export default function Projects() {
 
   return (
     <>
-      <Navigation activeTab="projects" />
-      
       <h1 className="mb-8">Projects</h1>
 
       {/* Featured Projects */}

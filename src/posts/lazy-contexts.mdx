@@ -1,0 +1,46 @@
+export const frontmatter = {
+  title: 'Loading Lazy Contexts',
+  date: '2024-12-29',
+  excerpt: 'How to structure your AI contexts for optimal results (stop throwing everything in CLAUDE.md).',
+  tags: ['ai', 'contexts', 'claude', 'chatgpt', 'openai'],
+}
+
+Yeah go ahead, keep throwing important instructions in your `CLAUDE.md` or `AGENTS.md`. *What's the big deal?*
+
+Well I'm not sure if you've noticed yet but the bot keeps forgetting things you told it—even in **all capital letters** with "DONT FORGET THIS" in front of it. What did the bot do? It went ahead and *forgot*. It was probably working on a longer task and in between being told about the information and what it should do and now it has taken many actions and it just... forgot.
+
+This is **normal behavior** for most LLMs (and people)—they need to be reminded of things. What if instead of throwing everything in a single context file, we could **load the context as we need it**? This is where a new concept called *"lazy contexts"* comes in. This is the same concept used in Claude Code in their skills feature. It allows you to tell the bot in your main context file what skills are available and *when to use them*.
+
+## Lazy Contexts
+
+A lazy context is as simple as structuring your `CLAUDE.md` or `AGENTS.md` like this:
+
+```
+# CLAUDE.md
+
+## Contexts
+
+Read the correct context file when you believe that their description matches your current task. The file will have information about how to best handle the task and should be referenced when you are not sure what to do or when you first start the task.
+
+- /path/to/my/context.md - Read this when you are asked to <blank> or when you need to <blank>.
+```
+
+That's *literally* it. Now the bot will go and grab the correct context file when needed. This one change will not only keep your contexts **organized** but will also help the bot to be more **accurate** during your defined workflows.
+
+## Use Cases
+
+### Executing Workflows
+
+There are *so many* workflows that I am sure are mostly manual at your job. There might even already be a corporate runbook that has the step-by-step directions in it! This is a **perfect** use case for lazy contexts.
+
+You can just give the runbook to the bot using the lazy context structure above and when you ask it to run the workflow, it will read the correct context file and execute the steps. We use this *substantially* at my job to run the setup and pre-review tasks for one of our approval processes.
+
+### Understanding Corporate Applications
+
+So many of the applications we work with every day *aren't* well known or documented across the internet. Models have **no clue** how to actually use these apps and what the best practices are. Once again this is context that is not always needed for every task but can be loaded when needed (i.e., *"use this CLI for... and you can learn how to use it here: \<path/url>"*).
+
+### Onboarding New Team Members
+
+Every team has *that* giant onboarding doc—or worse, knowledge scattered across wikis, Slack threads, and "ask Sarah, she knows." Instead of making your new hire (or yourself, six months from now) dig through all of it, you can create targeted context files for specific domains.
+
+Point the bot to your **architecture overview** when someone asks "how does auth work here?" or your **deployment guide** when they need to ship something. The bot becomes a *personalized onboarding buddy* that surfaces exactly the right documentation at the right time—without overwhelming anyone with everything at once.

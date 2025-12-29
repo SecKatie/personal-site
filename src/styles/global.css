@@ -6,34 +6,34 @@
 }
 
 /* Going deeper in hierarchy: slide from right */
-[data-transition="right"]::view-transition-old(root) {
+[data-transition="right"]::view-transition-old(content) {
   animation: slide-out-left 0.3s ease-in-out forwards;
 }
-[data-transition="right"]::view-transition-new(root) {
+[data-transition="right"]::view-transition-new(content) {
   animation: slide-in-right 0.3s ease-in-out forwards;
 }
 
 /* Going up in hierarchy: slide from left */
-[data-transition="left"]::view-transition-old(root) {
+[data-transition="left"]::view-transition-old(content) {
   animation: slide-out-right 0.3s ease-in-out forwards;
 }
-[data-transition="left"]::view-transition-new(root) {
+[data-transition="left"]::view-transition-new(content) {
   animation: slide-in-left 0.3s ease-in-out forwards;
 }
 
 /* Same level, going forward alphabetically: slide down */
-[data-transition="down"]::view-transition-old(root) {
+[data-transition="down"]::view-transition-old(content) {
   animation: slide-out-up 0.3s ease-in-out forwards;
 }
-[data-transition="down"]::view-transition-new(root) {
+[data-transition="down"]::view-transition-new(content) {
   animation: slide-in-down 0.3s ease-in-out forwards;
 }
 
 /* Same level, going backward alphabetically: slide up */
-[data-transition="up"]::view-transition-old(root) {
+[data-transition="up"]::view-transition-old(content) {
   animation: slide-out-down 0.3s ease-in-out forwards;
 }
-[data-transition="up"]::view-transition-new(root) {
+[data-transition="up"]::view-transition-new(content) {
   animation: slide-in-up 0.3s ease-in-out forwards;
 }
 
@@ -195,17 +195,146 @@
   }
 
   ul, ol {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-left: 1.75rem;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
   }
 
   li {
     margin-bottom: 0.5rem;
     color: var(--color-text-muted);
+    padding-left: 0.25rem;
   }
 
   li::marker {
     color: var(--color-accent-yellow);
+  }
+
+  /* Nested lists */
+  li > ul, li > ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  li > ul {
+    list-style-type: circle;
+  }
+
+  /* Code blocks */
+  pre {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    color: var(--color-text);
+  }
+
+  code {
+    background: rgba(255, 79, 216, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    color: var(--color-accent);
+  }
+
+  /* Article content spacing */
+  article h2 {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  article h2:first-of-type {
+    margin-top: 1.5rem;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  /* Popovers */
+  [popover] {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    max-width: 320px;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.4),
+      0 0 20px var(--color-accent-glow);
+  }
+
+  [popover]::backdrop {
+    background: rgba(10, 14, 26, 0.5);
+  }
+
+  [popover] strong {
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Popover trigger buttons */
+  .popover-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: var(--color-accent-yellow);
+    cursor: help;
+    border-bottom: 1px dashed var(--color-accent-yellow);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .popover-trigger:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  /* Anchor popover to its trigger using implicit anchor */
+  [popover] {
+    position-anchor: implicit;
+    inset: unset;
+    bottom: anchor(top);
+    left: anchor(center);
+    translate: -50% -0.5rem;
+    position-try-fallbacks: --below;
+  }
+
+  @position-try --below {
+    bottom: unset;
+    top: anchor(bottom);
+    translate: -50% 0.5rem;
   }
 }
 
